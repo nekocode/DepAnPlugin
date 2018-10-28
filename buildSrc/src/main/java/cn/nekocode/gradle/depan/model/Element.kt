@@ -21,7 +21,7 @@ package cn.nekocode.gradle.depan.model
  */
 interface Element {
     enum class Type {
-        TYPE, FIELD, METHOD
+        TYPE, FIELD, METHOD,
     }
 
     val elementType: Type

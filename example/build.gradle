@@ -3,10 +3,6 @@ apply plugin: "depan"
 
 depan {
     outputDirFile = new File(project.buildDir, "depan")
-    typeFilter {
-        !it.startsWith("java.") &&
-                !it.startsWith("android.")
-    }
 }
 
 android {

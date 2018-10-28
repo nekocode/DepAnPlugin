@@ -26,27 +26,26 @@ import com.j256.ormlite.table.DatabaseTable
 @DatabaseTable(tableName = "relation")
 class Relation() {
     enum class Type {
-        HAS,
-        REFERENCES
+        HAS, REFERENCES,
     }
     lateinit var key: String
 
     @DatabaseField(columnName = "id", generatedId = true)
     var id: Int = -1
 
-    @DatabaseField(columnName = "fromElementType", dataType = DataType.ENUM_INTEGER)
+    @DatabaseField(columnName = "fromElementType", dataType = DataType.ENUM_STRING)
     lateinit var fromElementType: Element.Type
 
     @DatabaseField(columnName = "fromElementId")
     var fromElementId: Int = -1
 
-    @DatabaseField(columnName = "toElementType", dataType = DataType.ENUM_INTEGER)
+    @DatabaseField(columnName = "toElementType", dataType = DataType.ENUM_STRING)
     lateinit var toElementType: Element.Type
 
     @DatabaseField(columnName = "toElementId")
     var toElementId: Int = -1
 
-    @DatabaseField(columnName = "relation", dataType = DataType.ENUM_INTEGER)
+    @DatabaseField(columnName = "relation", dataType = DataType.ENUM_STRING)
     lateinit var relation: Type
 
     @DatabaseField(columnName = "_key", unique = true)
