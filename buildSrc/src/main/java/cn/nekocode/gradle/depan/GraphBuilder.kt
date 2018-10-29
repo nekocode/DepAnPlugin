@@ -39,12 +39,12 @@ class GraphBuilder(
                 }
             }
             is FieldElement -> {
-                var e = typeNodes[element.ownerClass.key]
+                var e = typeNodes[element.ownerType.key]
                 if (e != null) {
-                    element.ownerClass = e
+                    element.ownerType = e
                 } else {
-                    e = newNode(element.ownerClass) as TypeElement?
-                    element.ownerClass = e ?: TypeElement.SKIPPED_TYPE
+                    e = newNode(element.ownerType) as TypeElement?
+                    element.ownerType = e ?: TypeElement.SKIPPED_TYPE
                 }
 
                 e = typeNodes[element.type.key]
@@ -58,12 +58,12 @@ class GraphBuilder(
                 nodes.getOrPut(element.key) { element }
             }
             is MethodElement -> {
-                var e = typeNodes[element.ownerClass.key]
+                var e = typeNodes[element.ownerType.key]
                 if (e != null) {
-                    element.ownerClass = e
+                    element.ownerType = e
                 } else {
-                    e = newNode(element.ownerClass) as TypeElement?
-                    element.ownerClass = e ?: TypeElement.SKIPPED_TYPE
+                    e = newNode(element.ownerType) as TypeElement?
+                    element.ownerType = e ?: TypeElement.SKIPPED_TYPE
                 }
 
                 nodes.getOrPut(element.key) { element }

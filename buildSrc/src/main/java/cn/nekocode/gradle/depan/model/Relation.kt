@@ -33,17 +33,17 @@ class Relation() {
     @DatabaseField(columnName = "id", generatedId = true)
     var id: Int = -1
 
-    @DatabaseField(columnName = "fromElementType", dataType = DataType.ENUM_STRING)
-    lateinit var fromElementType: Element.Type
+    @DatabaseField(columnName = "fromType", dataType = DataType.ENUM_STRING)
+    lateinit var fromType: Element.Type
 
-    @DatabaseField(columnName = "fromElementId")
-    var fromElementId: Int = -1
+    @DatabaseField(columnName = "fromId")
+    var fromId: Int = -1
 
-    @DatabaseField(columnName = "toElementType", dataType = DataType.ENUM_STRING)
-    lateinit var toElementType: Element.Type
+    @DatabaseField(columnName = "toType", dataType = DataType.ENUM_STRING)
+    lateinit var toType: Element.Type
 
-    @DatabaseField(columnName = "toElementId")
-    var toElementId: Int = -1
+    @DatabaseField(columnName = "toId")
+    var toId: Int = -1
 
     @DatabaseField(columnName = "relation", dataType = DataType.ENUM_STRING)
     lateinit var relation: Type
@@ -62,13 +62,13 @@ class Relation() {
     }
 
     fun update() {
-        this.fromElementType = fromElement.elementType
-        this.fromElementId = fromElement.id
-        this.toElementType = toElement.elementType
-        this.toElementId = toElement.id
+        this.fromType = fromElement.elementType
+        this.fromId = fromElement.id
+        this.toType = toElement.elementType
+        this.toId = toElement.id
         this.key = "${fromElement.key}|${toElement.key}|$relation"
-        this._key = "${fromElementType.ordinal}|$fromElementId|" +
-                "${toElementType.ordinal}|$toElementId|${relation.ordinal}"
+        this._key = "${fromType.ordinal}|$fromId|" +
+                "${toType.ordinal}|$toId|${relation.ordinal}"
     }
 
     override fun hashCode() = key.hashCode()
