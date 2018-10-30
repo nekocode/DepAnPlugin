@@ -26,7 +26,7 @@ class GraphBuilder(
         private val depanConfig: DepanConfig) {
     private val typeNodes = HashMap<String, TypeElement>()
     private val nodes = HashMap<String, Element>()
-    private val edges = HashSet<Relation>()
+    private val edges = HashSet<Reference>()
 
     fun newNode(element: Element): Element {
         // Save to memory
@@ -39,12 +39,12 @@ class GraphBuilder(
                 }
             }
             is FieldElement -> {
-                var e = typeNodes[element.ownerType.key]
+                var e = typeNodes[element.owner.key]
                 if (e != null) {
-                    element.ownerType = e
+                    element.owner = e
                 } else {
-                    e = newNode(element.ownerType) as TypeElement?
-                    element.ownerType = e ?: TypeElement.SKIPPED_TYPE
+                    e = newNode(element.owner) as TypeElement?
+                    element.owner = e ?: TypeElement.SKIPPED_TYPE
                 }
 
                 e = typeNodes[element.type.key]
@@ -58,12 +58,12 @@ class GraphBuilder(
                 nodes.getOrPut(element.key) { element }
             }
             is MethodElement -> {
-                var e = typeNodes[element.ownerType.key]
+                var e = typeNodes[element.owner.key]
                 if (e != null) {
-                    element.ownerType = e
+                    element.owner = e
                 } else {
-                    e = newNode(element.ownerType) as TypeElement?
-                    element.ownerType = e ?: TypeElement.SKIPPED_TYPE
+                    e = newNode(element.owner) as TypeElement?
+                    element.owner = e ?: TypeElement.SKIPPED_TYPE
                 }
 
                 nodes.getOrPut(element.key) { element }
@@ -80,16 +80,16 @@ class GraphBuilder(
         return rlt
     }
 
-    fun newEdge(fromElement: Element, toElement: Element, type: Relation.Type): Relation? {
+    fun newEdge(fromElement: Element, toElement: Element): Reference? {
         // Save to memory
-        val relation = Relation(newNode(fromElement), newNode(toElement), type)
-        edges.add(relation)
+        val reference = Reference(newNode(fromElement), newNode(toElement))
+        edges.add(reference)
 
         if (edges.size > 5000) {
             // If there are too many edges, auto save to db
             saveToDb()
         }
-        return relation
+        return reference
     }
 
     fun saveToDb() {
@@ -137,7 +137,7 @@ class GraphBuilder(
 
             edges.forEach {
                 it.update()
-                val dao = dbHelper.relationDao
+                val dao = dbHelper.referenceDao
                 val rlt = dao.queryBuilder().where()
                         .eq("_key", it._key)
                         .queryForFirst()

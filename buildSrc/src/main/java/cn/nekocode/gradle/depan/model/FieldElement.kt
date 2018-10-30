@@ -36,8 +36,8 @@ class FieldElement(): Element {
     @DatabaseField(columnName = "type", foreign = true)
     lateinit var type: TypeElement
 
-    @DatabaseField(columnName = "owner_type", foreign = true)
-    lateinit var ownerType: TypeElement
+    @DatabaseField(columnName = "owner", foreign = true)
+    lateinit var owner: TypeElement
 
     @DatabaseField(columnName = "_key", unique = true)
     lateinit var _key: String
@@ -47,11 +47,11 @@ class FieldElement(): Element {
         this._key = "$name|${type.id}|${ownerClass.id}"
         this.name = name
         this.type = type
-        this.ownerType = ownerClass
+        this.owner = ownerClass
     }
 
     fun update() {
-        this._key = "$name|${type.id}|${ownerType.id}"
+        this._key = "$name|${type.id}|${owner.id}"
     }
 
     override fun hashCode() = key.hashCode()

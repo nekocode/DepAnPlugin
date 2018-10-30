@@ -19,7 +19,6 @@ package cn.nekocode.gradle.depan.bytecode
 import cn.nekocode.gradle.depan.GraphBuilder
 import cn.nekocode.gradle.depan.model.FieldElement
 import cn.nekocode.gradle.depan.model.MethodElement
-import cn.nekocode.gradle.depan.model.Relation
 import cn.nekocode.gradle.depan.model.TypeElement
 import org.objectweb.asm.*
 
@@ -39,26 +38,26 @@ class DepanClassVisitor(private val graphBuilder: GraphBuilder): ClassVisitor(Op
 
         superName?.asmObjectTypeName()?.let {
             val superClassType = TypeElement(it)
-            graphBuilder.newEdge(mainType, superClassType, Relation.Type.REFERENCES)
+            graphBuilder.newEdge(mainType, superClassType)
         }
 
         for (i in interfaces) {
             val interfaceType = TypeElement(i.asmObjectTypeName())
-            graphBuilder.newEdge(mainType, interfaceType, Relation.Type.REFERENCES)
+            graphBuilder.newEdge(mainType, interfaceType)
         }
     }
 
     override fun visitAnnotation(
             desc: String, visible: Boolean): AnnotationVisitor? {
         if (isSkipped) return null
-        graphBuilder.newEdge(mainType, TypeElement(desc.asmTypeName()), Relation.Type.REFERENCES)
+        graphBuilder.newEdge(mainType, TypeElement(desc.asmTypeName()))
         return null
     }
 
     override fun visitTypeAnnotation(
             typeRef: Int, typePath: TypePath?, desc: String, visible: Boolean): AnnotationVisitor? {
         if (isSkipped) return null
-        graphBuilder.newEdge(mainType, TypeElement(desc.asmTypeName()), Relation.Type.REFERENCES)
+        graphBuilder.newEdge(mainType, TypeElement(desc.asmTypeName()))
         return null
     }
 
@@ -79,16 +78,16 @@ class DepanClassVisitor(private val graphBuilder: GraphBuilder): ClassVisitor(Op
         graphBuilder.newNode(method)
 
         desc.asmArgumentTypes().forEach {
-            graphBuilder.newEdge(method, TypeElement(it), Relation.Type.REFERENCES)
+            graphBuilder.newEdge(method, TypeElement(it))
         }
 
         graphBuilder.newEdge(method,
-                TypeElement(desc.asmReturnTypeName()), Relation.Type.REFERENCES)
+                TypeElement(desc.asmReturnTypeName()))
 
         if (exceptions != null) {
             for (exception in exceptions) {
                 graphBuilder.newEdge(method,
-                        TypeElement(exception.asmObjectTypeName()), Relation.Type.REFERENCES)
+                        TypeElement(exception.asmObjectTypeName()))
             }
         }
 

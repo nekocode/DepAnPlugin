@@ -18,7 +18,6 @@ package cn.nekocode.gradle.depan.bytecode
 
 import cn.nekocode.gradle.depan.GraphBuilder
 import cn.nekocode.gradle.depan.model.FieldElement
-import cn.nekocode.gradle.depan.model.Relation
 import cn.nekocode.gradle.depan.model.TypeElement
 import org.objectweb.asm.AnnotationVisitor
 import org.objectweb.asm.FieldVisitor
@@ -33,13 +32,13 @@ class DepanFieldVisitor(
         private val field: FieldElement) : FieldVisitor(Opcodes.ASM5) {
 
     override fun visitAnnotation(desc: String, visible: Boolean): AnnotationVisitor? {
-        graphBuilder.newEdge(field, TypeElement(desc.asmTypeName()), Relation.Type.REFERENCES)
+        graphBuilder.newEdge(field, TypeElement(desc.asmTypeName()))
         return null
     }
 
     override fun visitTypeAnnotation(
             typeRef: Int, typePath: TypePath?, desc: String, visible: Boolean): AnnotationVisitor? {
-        graphBuilder.newEdge(field, TypeElement(desc.asmTypeName()), Relation.Type.REFERENCES)
+        graphBuilder.newEdge(field, TypeElement(desc.asmTypeName()))
         return null
     }
 }

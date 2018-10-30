@@ -19,7 +19,6 @@ package cn.nekocode.gradle.depan.bytecode
 import cn.nekocode.gradle.depan.GraphBuilder
 import cn.nekocode.gradle.depan.model.FieldElement
 import cn.nekocode.gradle.depan.model.MethodElement
-import cn.nekocode.gradle.depan.model.Relation
 import cn.nekocode.gradle.depan.model.TypeElement
 import org.objectweb.asm.*
 
@@ -31,13 +30,13 @@ class DepanMethodVisitor(
         private val method: MethodElement): MethodVisitor(Opcodes.ASM5) {
 
     override fun visitAnnotation(desc: String, visible: Boolean): AnnotationVisitor? {
-        graphBuilder.newEdge(method,TypeElement(desc.asmTypeName()), Relation.Type.REFERENCES)
+        graphBuilder.newEdge(method,TypeElement(desc.asmTypeName()))
         return null
     }
 
     override fun visitTypeAnnotation(
             typeRef: Int, typePath: TypePath?, desc: String, visible: Boolean): AnnotationVisitor? {
-        graphBuilder.newEdge(method, TypeElement(desc.asmTypeName()), Relation.Type.REFERENCES)
+        graphBuilder.newEdge(method, TypeElement(desc.asmTypeName()))
         return null
     }
 
@@ -46,13 +45,13 @@ class DepanMethodVisitor(
                 name,
                 TypeElement(desc.asmTypeName()),
                 TypeElement(owner.asmObjectTypeName()))
-        graphBuilder.newEdge(method, field, Relation.Type.REFERENCES)
+        graphBuilder.newEdge(method, field)
     }
 
     override fun visitLocalVariable(
             name: String?, desc: String, signature: String?,
             start: Label?, end: Label?, index: Int) {
-        graphBuilder.newEdge(method, TypeElement(desc.asmTypeName()), Relation.Type.REFERENCES)
+        graphBuilder.newEdge(method, TypeElement(desc.asmTypeName()))
     }
 
     override fun visitMethodInsn(
@@ -60,42 +59,42 @@ class DepanMethodVisitor(
 
         val otherMethod = MethodElement(
                 name, desc, TypeElement(owner.asmObjectTypeName()))
-        graphBuilder.newEdge(method, otherMethod, Relation.Type.REFERENCES)
+        graphBuilder.newEdge(method, otherMethod)
 
         desc.asmArgumentTypes().forEach {
-            graphBuilder.newEdge(otherMethod, TypeElement(it), Relation.Type.REFERENCES)
+            graphBuilder.newEdge(otherMethod, TypeElement(it))
         }
 
         graphBuilder.newEdge(otherMethod,
-                TypeElement(desc.asmReturnTypeName()), Relation.Type.REFERENCES)
+                TypeElement(desc.asmReturnTypeName()))
     }
 
     override fun visitMultiANewArrayInsn(desc: String, dims: Int) {
-        graphBuilder.newEdge(method, TypeElement(desc.asmTypeName()), Relation.Type.REFERENCES)
+        graphBuilder.newEdge(method, TypeElement(desc.asmTypeName()))
     }
 
     override fun visitParameterAnnotation(
             parameter: Int, desc: String, visible: Boolean): AnnotationVisitor? {
-        graphBuilder.newEdge(method, TypeElement(desc.asmTypeName()), Relation.Type.REFERENCES)
+        graphBuilder.newEdge(method, TypeElement(desc.asmTypeName()))
         return null
     }
 
     override fun visitTryCatchBlock(start: Label?, end: Label?, handler: Label?, type: String?) {
         if (type != null) {
             graphBuilder.newEdge(method,
-                    TypeElement(type.asmObjectTypeName()), Relation.Type.REFERENCES)
+                    TypeElement(type.asmObjectTypeName()))
         }
     }
 
     override fun visitTypeInsn(opcode: Int, type: String) {
         graphBuilder.newEdge(method,
-                TypeElement(type.asmObjectTypeName()), Relation.Type.REFERENCES)
+                TypeElement(type.asmObjectTypeName()))
     }
 
     override fun visitLdcInsn(cst: Any?) {
         if (cst is Type) {
             graphBuilder.newEdge(method,
-                    TypeElement(getFullyQualifiedTypeName(cst)), Relation.Type.REFERENCES)
+                    TypeElement(getFullyQualifiedTypeName(cst)))
         }
     }
 }

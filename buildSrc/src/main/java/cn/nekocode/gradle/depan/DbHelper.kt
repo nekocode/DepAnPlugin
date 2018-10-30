@@ -48,8 +48,8 @@ class DbHelper(dbFile: File) {
     val methodElementDao: Dao<MethodElement, *> by lazy {
         DaoManager.createDao(connectionSource, MethodElement::class.java)
     }
-    val relationDao: Dao<Relation, *> by lazy {
-        DaoManager.createDao(connectionSource, Relation::class.java)
+    val referenceDao: Dao<Reference, *> by lazy {
+        DaoManager.createDao(connectionSource, Reference::class.java)
     }
 
     private fun onCreate(connectionSource: ConnectionSource) {
@@ -57,7 +57,7 @@ class DbHelper(dbFile: File) {
             TableUtils.createTableIfNotExists(connectionSource, TypeElement::class.java)
             TableUtils.createTableIfNotExists(connectionSource, FieldElement::class.java)
             TableUtils.createTableIfNotExists(connectionSource, MethodElement::class.java)
-            TableUtils.createTableIfNotExists(connectionSource, Relation::class.java)
+            TableUtils.createTableIfNotExists(connectionSource, Reference::class.java)
         } catch (ignored: SQLException) {
         }
     }

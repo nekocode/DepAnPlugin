@@ -23,11 +23,8 @@ import com.j256.ormlite.table.DatabaseTable
 /**
  * @author nekocode (nekocode.cn@gmail.com)
  */
-@DatabaseTable(tableName = "relation")
-class Relation() {
-    enum class Type {
-        HAS, REFERENCES,
-    }
+@DatabaseTable(tableName = "reference")
+class Reference() {
     lateinit var key: String
 
     @DatabaseField(columnName = "id", generatedId = true)
@@ -45,17 +42,13 @@ class Relation() {
     @DatabaseField(columnName = "to_id")
     var toId: Int = -1
 
-    @DatabaseField(columnName = "relation", dataType = DataType.ENUM_STRING)
-    lateinit var relation: Type
-
     @DatabaseField(columnName = "_key", unique = true)
     lateinit var _key: String
 
     private lateinit var fromElement: Element
     private lateinit var toElement: Element
 
-    constructor(fromElement: Element, toElement: Element, relation: Type): this() {
-        this.relation = relation
+    constructor(fromElement: Element, toElement: Element): this() {
         this.fromElement = fromElement
         this.toElement = toElement
         update()
@@ -66,15 +59,14 @@ class Relation() {
         this.fromId = fromElement.id
         this.toType = toElement.elementType
         this.toId = toElement.id
-        this.key = "${fromElement.key}|${toElement.key}|$relation"
-        this._key = "${fromType.ordinal}|$fromId|" +
-                "${toType.ordinal}|$toId|${relation.ordinal}"
+        this.key = "${fromElement.key}|${toElement.key}"
+        this._key = "${fromType.ordinal}|$fromId|${toType.ordinal}|$toId"
     }
 
     override fun hashCode() = key.hashCode()
 
     override fun equals(other: Any?): Boolean {
-        if (other is Relation) {
+        if (other is Reference) {
             return other.key == this.key
         }
         return super.equals(other)
