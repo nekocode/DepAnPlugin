@@ -21,93 +21,62 @@ import cn.nekocode.gradle.depan.model.FieldElement
 import cn.nekocode.gradle.depan.model.MethodElement
 import cn.nekocode.gradle.depan.model.Relation
 import cn.nekocode.gradle.depan.model.TypeElement
-import org.gradle.api.Project
 import org.objectweb.asm.*
 
 /**
  * @author nekocode (nekocode.cn@gmail.com)
  */
-class DepanClassVisitor(
-        private val project: Project,
-        private val graphBuilder: GraphBuilder): ClassVisitor(Opcodes.ASM5) {
-
-    companion object {
-        const val CLASS_NAME_PREFIX = "class\$"
-    }
-    private lateinit var mainClass: TypeElement
-    private var skipClass = false
+class DepanClassVisitor(private val graphBuilder: GraphBuilder): ClassVisitor(Opcodes.ASM5) {
+    private lateinit var mainType: TypeElement
+    private var isSkipped = false
 
     override fun visit(
             version: Int, access: Int, name: String, signature: String?,
             superName: String?, interfaces: Array<out String>) {
-        mainClass = TypeElement(name.asmObjectTypeName())
-        skipClass = (graphBuilder.newNode(mainClass) == TypeElement.SKIPPED_TYPE)
-        if (skipClass) return
+        mainType = TypeElement(name.asmObjectTypeName())
+        isSkipped = (graphBuilder.newNode(mainType) == TypeElement.SKIPPED_TYPE)
+        if (isSkipped) return
 
         superName?.asmObjectTypeName()?.let {
-            graphBuilder.newEdge(mainClass, TypeElement(it), Relation.Type.REFERENCES)
+            val superClassType = TypeElement(it)
+            graphBuilder.newEdge(mainType, superClassType, Relation.Type.REFERENCES)
         }
 
         for (i in interfaces) {
-            graphBuilder.newEdge(mainClass,
-                    TypeElement(i.asmObjectTypeName()), Relation.Type.REFERENCES)
+            val interfaceType = TypeElement(i.asmObjectTypeName())
+            graphBuilder.newEdge(mainType, interfaceType, Relation.Type.REFERENCES)
         }
     }
 
     override fun visitAnnotation(
             desc: String, visible: Boolean): AnnotationVisitor? {
-        if (skipClass) return null
+        if (isSkipped) return null
+        graphBuilder.newEdge(mainType, TypeElement(desc.asmTypeName()), Relation.Type.REFERENCES)
+        return null
+    }
 
-        graphBuilder.newEdge(mainClass, TypeElement(desc.asmTypeName()), Relation.Type.REFERENCES)
+    override fun visitTypeAnnotation(
+            typeRef: Int, typePath: TypePath?, desc: String, visible: Boolean): AnnotationVisitor? {
+        if (isSkipped) return null
+        graphBuilder.newEdge(mainType, TypeElement(desc.asmTypeName()), Relation.Type.REFERENCES)
         return null
     }
 
     override fun visitField(
             access: Int, name: String, desc: String,
             signature: String?, value: Any?): FieldVisitor? {
-        if (skipClass) return null
-
-        val field = FieldElement(name, TypeElement(desc.asmTypeName()), mainClass)
+        if (isSkipped) return null
+        val field = FieldElement(name, TypeElement(desc.asmTypeName()), mainType)
         graphBuilder.newNode(field)
-        graphBuilder.newEdge(mainClass, field, Relation.Type.HAS)
-
-        if ((access.and(Opcodes.ACC_SYNTHETIC)) == Opcodes.ACC_SYNTHETIC) {
-            if (Class::class.java.name == Type.getType(desc).className) {
-                if (name.startsWith(CLASS_NAME_PREFIX)) {
-                    var realName = name.substring(CLASS_NAME_PREFIX.length)
-                    realName = realName.replace('$', '.')
-                    val lastDotIndex = realName.lastIndexOf('.')
-
-                    for (i in 0..(lastDotIndex - 1)) {
-                        if (Character.isUpperCase(realName[i])) {
-                            if (i == 0) {
-                                return null
-                            }
-                            if (realName[i - 1] == '.') {
-                                realName = realName.substring(0, i) +
-                                        realName.substring(i).replace('.', '$')
-                                break
-                            }
-                        }
-                    }
-                    if (Character.isJavaIdentifierStart(realName[0])) {
-                        graphBuilder.newEdge(field, TypeElement(realName), Relation.Type.REFERENCES)
-                    }
-                }
-            }
-        }
-
-        return DepanFieldVisitor(project, graphBuilder, field)
+        return DepanFieldVisitor(graphBuilder, field)
     }
 
     override fun visitMethod(
             access: Int, name: String, desc: String,
             signature: String?, exceptions: Array<out String>?): MethodVisitor? {
-        if (skipClass) return null
-
-        val method = MethodElement(name, desc, mainClass)
+        if (isSkipped) return null
+        val method = MethodElement(name, desc, mainType)
         graphBuilder.newNode(method)
-        graphBuilder.newEdge(mainClass, method, Relation.Type.HAS)
 
         desc.asmArgumentTypes().forEach {
             graphBuilder.newEdge(method, TypeElement(it), Relation.Type.REFERENCES)
@@ -123,6 +92,6 @@ class DepanClassVisitor(
             }
         }
 
-        return DepanMethodVisitor(project, graphBuilder, method)
+        return DepanMethodVisitor(graphBuilder, method)
     }
 }

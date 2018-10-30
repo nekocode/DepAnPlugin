@@ -33,16 +33,16 @@ class Relation() {
     @DatabaseField(columnName = "id", generatedId = true)
     var id: Int = -1
 
-    @DatabaseField(columnName = "fromType", dataType = DataType.ENUM_STRING)
+    @DatabaseField(columnName = "from_type", dataType = DataType.ENUM_STRING)
     lateinit var fromType: Element.Type
 
-    @DatabaseField(columnName = "fromId")
+    @DatabaseField(columnName = "from_id")
     var fromId: Int = -1
 
-    @DatabaseField(columnName = "toType", dataType = DataType.ENUM_STRING)
+    @DatabaseField(columnName = "to_type", dataType = DataType.ENUM_STRING)
     lateinit var toType: Element.Type
 
-    @DatabaseField(columnName = "toId")
+    @DatabaseField(columnName = "to_id")
     var toId: Int = -1
 
     @DatabaseField(columnName = "relation", dataType = DataType.ENUM_STRING)

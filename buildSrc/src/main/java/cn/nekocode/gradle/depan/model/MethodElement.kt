@@ -36,7 +36,7 @@ class MethodElement(): Element {
     @DatabaseField(columnName = "desc")
     lateinit var desc: String
 
-    @DatabaseField(columnName = "ownerType", foreign = true)
+    @DatabaseField(columnName = "owner_type", foreign = true)
     lateinit var ownerType: TypeElement
 
     @DatabaseField(columnName = "_key", unique = true)

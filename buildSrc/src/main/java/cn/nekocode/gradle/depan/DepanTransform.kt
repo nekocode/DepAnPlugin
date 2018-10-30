@@ -90,7 +90,7 @@ class DepanTransform(private val project: Project) : Transform() {
     }
 
     private fun transform(ins: InputStream, graphBuilder: GraphBuilder) {
-        val visitor = DepanClassVisitor(project, graphBuilder)
+        val visitor = DepanClassVisitor(graphBuilder)
 
         try {
             val cr = ClassReader(ins)
