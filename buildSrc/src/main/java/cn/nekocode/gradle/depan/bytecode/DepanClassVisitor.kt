@@ -65,8 +65,10 @@ class DepanClassVisitor(private val graphBuilder: GraphBuilder): ClassVisitor(Op
             access: Int, name: String, desc: String,
             signature: String?, value: Any?): FieldVisitor? {
         if (isSkipped) return null
-        val field = FieldElement(name, TypeElement(desc.asmTypeName()), mainType)
+        val fieldType = TypeElement(desc.asmTypeName())
+        val field = FieldElement(name, fieldType, mainType)
         graphBuilder.newNode(field)
+        graphBuilder.newEdge(field, fieldType)
         return DepanFieldVisitor(graphBuilder, field)
     }
 
