@@ -19,7 +19,18 @@ References between elements:
 
 Usage:
 
+The `${lastest-version}` of this plugin is [![](https://jitpack.io/v/nekocode/DepAnPlugin.svg)](https://jitpack.io/#nekocode/DepAnPlugin). Copy below code to the `build.gradle` of your android application project.
+
 ```gradle
+buildscript {
+    repositories {
+        maven { url "https://jitpack.io" }
+    }
+    dependencies {
+        classpath "com.github.nekocode:DepAnPlugin:${lastest-verion}"
+    }
+}
+
 apply plugin: 'depan'
  
 depan {
