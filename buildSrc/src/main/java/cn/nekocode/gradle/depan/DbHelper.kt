@@ -33,14 +33,22 @@ import java.sql.SQLException
 class DbHelper(dbFile: File) {
     private val connectionSource by lazy {
         Files.createParentDirs(dbFile)
-        val rlt = JdbcConnectionSource("jdbc:sqlite:${dbFile.path}")
-        onCreate(rlt)
-        rlt
+        val conn = JdbcConnectionSource("jdbc:sqlite:${dbFile.path}")
+        onCreate(conn)
+        conn
     }
     val typeElementDao: Dao<TypeElement, *> by lazy {
-        val rlt = DaoManager.createDao(connectionSource, TypeElement::class.java)
-        TypeElement.SKIPPED_TYPE = rlt.createIfNotExists(TypeElement.SKIPPED_TYPE)
-        rlt
+        val dao = DaoManager.createDao(connectionSource, TypeElement::class.java)
+
+        val rlt = dao.queryBuilder().where()
+                .eq("name", TypeElement.SKIPPED_TYPE.name)
+                .queryForFirst()
+        if (rlt != null) {
+            TypeElement.SKIPPED_TYPE.id = rlt.id
+        } else {
+            dao.create(TypeElement.SKIPPED_TYPE)
+        }
+        dao
     }
     val fieldElementDao: Dao<FieldElement, *> by lazy {
         DaoManager.createDao(connectionSource, FieldElement::class.java)
