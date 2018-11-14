@@ -1,4 +1,4 @@
-This is a gradle plugin to extract the dependency info (between classes, fields and methods) of your Android project. Save all the dependencies to a sqlite database file.
+This is a gradle plugin to extract the dependencies between classes, fields and methods in your Android project. And save to a sqlite database file.
 
 ## Database structure
 
@@ -29,7 +29,7 @@ A `method` table to save all methods of all classes:
 | owner | ID of this method's owner type |
 | string_id | Internal use only |
 
-And lastly there is a `reference` table for saving references between all types, fields and methods:
+And lastly there is a `reference` table to save references between all types, fields and methods:
 
 | Column | Description |
 | :- | :- |
