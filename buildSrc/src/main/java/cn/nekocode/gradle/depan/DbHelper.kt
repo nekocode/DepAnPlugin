@@ -16,7 +16,10 @@
 
 package cn.nekocode.gradle.depan
 
-import cn.nekocode.gradle.depan.model.*
+import cn.nekocode.gradle.depan.model.FieldElement
+import cn.nekocode.gradle.depan.model.MethodElement
+import cn.nekocode.gradle.depan.model.Reference
+import cn.nekocode.gradle.depan.model.TypeElement
 import com.google.common.io.Files
 import com.j256.ormlite.dao.Dao
 import com.j256.ormlite.dao.DaoManager

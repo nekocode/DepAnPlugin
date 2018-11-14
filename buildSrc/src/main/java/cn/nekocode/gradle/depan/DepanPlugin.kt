@@ -28,7 +28,7 @@ import java.net.URLClassLoader
 /**
  * @author nekocode (nekocode.cn@gmail.com)
  */
-class DepanPlugin: Plugin<Project> {
+class DepanPlugin : Plugin<Project> {
 
     companion object {
         const val TASK_PREFIX = "transformClassesWithDepanFor"

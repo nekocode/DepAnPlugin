@@ -80,9 +80,9 @@ class GraphBuilder(
         return rlt
     }
 
-    fun newEdge(fromElement: Element, toElement: Element): Reference? {
+    fun newEdge(fromElement: Element, toElement: Element, relation: Relation): Reference? {
         // Save to memory
-        val reference = Reference(newNode(fromElement), newNode(toElement))
+        val reference = Reference(newNode(fromElement), newNode(toElement), relation)
         edges.add(reference)
 
         if (edges.size > 5000) {

@@ -23,8 +23,8 @@ import com.j256.ormlite.table.DatabaseTable
  * @author nekocode (nekocode.cn@gmail.com)
  */
 @DatabaseTable(tableName = "field")
-class FieldElement(): Element {
-    override val elementType = Element.Type.FIELD
+class FieldElement() : Element {
+    override val elementSort = ElementSort.F
 
     @DatabaseField(columnName = "id", generatedId = true)
     override var id: Int = -1
@@ -41,7 +41,7 @@ class FieldElement(): Element {
     @DatabaseField(columnName = "string_id", unique = true)
     lateinit var stringId: String
 
-    constructor(name: String, type: TypeElement, ownerClass: TypeElement): this() {
+    constructor(name: String, type: TypeElement, ownerClass: TypeElement) : this() {
         this.name = name
         this.type = type
         this.owner = ownerClass
