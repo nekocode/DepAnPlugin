@@ -25,7 +25,6 @@ import com.j256.ormlite.table.DatabaseTable
 @DatabaseTable(tableName = "method")
 class MethodElement(): Element {
     override val elementType = Element.Type.METHOD
-    override lateinit var key: String
 
     @DatabaseField(columnName = "id", generatedId = true)
     override var id: Int = -1
@@ -39,26 +38,28 @@ class MethodElement(): Element {
     @DatabaseField(columnName = "owner", foreign = true)
     lateinit var owner: TypeElement
 
-    @DatabaseField(columnName = "_key", unique = true)
-    lateinit var _key: String
+    @DatabaseField(columnName = "string_id", unique = true)
+    lateinit var stringId: String
 
     constructor(name: String, desc: String, ownerClass: TypeElement): this() {
-        this.key = "$name|$desc|${ownerClass.key}"
-        this._key = "$name|$desc|${ownerClass.id}"
+        this.stringId = "$name|$desc|${ownerClass.id}"
         this.name = name
         this.desc = desc
         this.owner = ownerClass
+        setStringId()
     }
 
-    fun update() {
-        this._key = "$name|$desc|${owner.id}"
+    fun setStringId() {
+        this.stringId = "$name|$desc|${owner.id}"
     }
 
-    override fun hashCode() = key.hashCode()
+    override fun runtimeId() = "$name|$desc|${owner.runtimeId()}"
+
+    override fun hashCode() = runtimeId().hashCode()
 
     override fun equals(other: Any?): Boolean {
         if (other is MethodElement) {
-            return other.key == this.key
+            return other.runtimeId() == this.runtimeId()
         }
         return super.equals(other)
     }

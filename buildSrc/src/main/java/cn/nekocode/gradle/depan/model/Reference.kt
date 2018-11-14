@@ -25,8 +25,6 @@ import com.j256.ormlite.table.DatabaseTable
  */
 @DatabaseTable(tableName = "reference")
 class Reference() {
-    lateinit var key: String
-
     @DatabaseField(columnName = "id", generatedId = true)
     var id: Int = -1
 
@@ -42,8 +40,8 @@ class Reference() {
     @DatabaseField(columnName = "to_id")
     var toId: Int = -1
 
-    @DatabaseField(columnName = "_key", unique = true)
-    lateinit var _key: String
+    @DatabaseField(columnName = "string_id", unique = true)
+    lateinit var stringId: String
 
     private lateinit var fromElement: Element
     private lateinit var toElement: Element
@@ -51,23 +49,24 @@ class Reference() {
     constructor(fromElement: Element, toElement: Element): this() {
         this.fromElement = fromElement
         this.toElement = toElement
-        update()
+        setStringId()
     }
 
-    fun update() {
+    fun setStringId() {
         this.fromType = fromElement.elementType
         this.fromId = fromElement.id
         this.toType = toElement.elementType
         this.toId = toElement.id
-        this.key = "${fromElement.key}|${toElement.key}"
-        this._key = "${fromType.ordinal}|$fromId|${toType.ordinal}|$toId"
+        this.stringId = "${fromType.ordinal}|$fromId|${toType.ordinal}|$toId"
     }
 
-    override fun hashCode() = key.hashCode()
+    fun key() = "${fromElement.runtimeId()}|${toElement.runtimeId()}"
+
+    override fun hashCode() = key().hashCode()
 
     override fun equals(other: Any?): Boolean {
         if (other is Reference) {
-            return other.key == this.key
+            return other.key() == this.key()
         }
         return super.equals(other)
     }

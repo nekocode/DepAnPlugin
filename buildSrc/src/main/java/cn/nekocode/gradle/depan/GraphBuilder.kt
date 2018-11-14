@@ -33,13 +33,13 @@ class GraphBuilder(
         val rlt: Element = when (element) {
             is TypeElement -> {
                 if (depanConfig.typeFilter.invoke(element.name)) {
-                    typeNodes.getOrPut(element.key) { element }
+                    typeNodes.getOrPut(element.runtimeId()) { element }
                 } else {
                     return TypeElement.SKIPPED_TYPE
                 }
             }
             is FieldElement -> {
-                var e = typeNodes[element.owner.key]
+                var e = typeNodes[element.owner.runtimeId()]
                 if (e != null) {
                     element.owner = e
                 } else {
@@ -47,7 +47,7 @@ class GraphBuilder(
                     element.owner = e ?: TypeElement.SKIPPED_TYPE
                 }
 
-                e = typeNodes[element.type.key]
+                e = typeNodes[element.type.runtimeId()]
                 if (e != null) {
                     element.type = e
                 } else {
@@ -55,10 +55,10 @@ class GraphBuilder(
                     element.type = e ?: TypeElement.SKIPPED_TYPE
                 }
 
-                nodes.getOrPut(element.key) { element }
+                nodes.getOrPut(element.runtimeId()) { element }
             }
             is MethodElement -> {
-                var e = typeNodes[element.owner.key]
+                var e = typeNodes[element.owner.runtimeId()]
                 if (e != null) {
                     element.owner = e
                 } else {
@@ -66,7 +66,7 @@ class GraphBuilder(
                     element.owner = e ?: TypeElement.SKIPPED_TYPE
                 }
 
-                nodes.getOrPut(element.key) { element }
+                nodes.getOrPut(element.runtimeId()) { element }
             }
             else -> {
                 throw Exception()
@@ -109,10 +109,10 @@ class GraphBuilder(
             nodes.values.forEach {
                 when (it) {
                     is FieldElement -> {
-                        it.update()
+                        it.setStringId()
                         val dao = dbHelper.fieldElementDao
                         val rlt = dao.queryBuilder().where()
-                                .eq("_key", it._key)
+                                .eq("string_id", it.stringId)
                                 .queryForFirst()
                         if (rlt != null) {
                             it.id = rlt.id
@@ -121,10 +121,10 @@ class GraphBuilder(
                         }
                     }
                     is MethodElement -> {
-                        it.update()
+                        it.setStringId()
                         val dao = dbHelper.methodElementDao
                         val rlt = dao.queryBuilder().where()
-                                .eq("_key", it._key)
+                                .eq("string_id", it.stringId)
                                 .queryForFirst()
                         if (rlt != null) {
                             it.id = rlt.id
@@ -136,10 +136,10 @@ class GraphBuilder(
             }
 
             edges.forEach {
-                it.update()
+                it.setStringId()
                 val dao = dbHelper.referenceDao
                 val rlt = dao.queryBuilder().where()
-                        .eq("_key", it._key)
+                        .eq("string_id", it.stringId)
                         .queryForFirst()
                 if (rlt == null) {
                     dao.create(it)

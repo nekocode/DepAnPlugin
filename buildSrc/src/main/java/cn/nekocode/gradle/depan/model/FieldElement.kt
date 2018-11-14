@@ -25,7 +25,6 @@ import com.j256.ormlite.table.DatabaseTable
 @DatabaseTable(tableName = "field")
 class FieldElement(): Element {
     override val elementType = Element.Type.FIELD
-    override lateinit var key: String
 
     @DatabaseField(columnName = "id", generatedId = true)
     override var id: Int = -1
@@ -39,26 +38,27 @@ class FieldElement(): Element {
     @DatabaseField(columnName = "owner", foreign = true)
     lateinit var owner: TypeElement
 
-    @DatabaseField(columnName = "_key", unique = true)
-    lateinit var _key: String
+    @DatabaseField(columnName = "string_id", unique = true)
+    lateinit var stringId: String
 
     constructor(name: String, type: TypeElement, ownerClass: TypeElement): this() {
-        this.key = "$name|${type.key}|${ownerClass.key}"
-        this._key = "$name|${type.id}|${ownerClass.id}"
         this.name = name
         this.type = type
         this.owner = ownerClass
+        setStringId()
     }
 
-    fun update() {
-        this._key = "$name|${type.id}|${owner.id}"
+    fun setStringId() {
+        this.stringId = "$name|${type.id}|${owner.id}"
     }
 
-    override fun hashCode() = key.hashCode()
+    override fun runtimeId() = "$name|${type.runtimeId()}|${owner.runtimeId()}"
+
+    override fun hashCode() = runtimeId().hashCode()
 
     override fun equals(other: Any?): Boolean {
         if (other is FieldElement) {
-            return other.key == this.key
+            return other.runtimeId() == this.runtimeId()
         }
         return super.equals(other)
     }

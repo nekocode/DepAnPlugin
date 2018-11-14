@@ -29,7 +29,6 @@ class TypeElement(): Element {
     }
 
     override val elementType = Element.Type.TYPE
-    override lateinit var key: String
 
     @DatabaseField(columnName = "id", generatedId = true)
     override var id: Int = -1
@@ -38,15 +37,16 @@ class TypeElement(): Element {
     lateinit var name: String
 
     constructor(name: String): this() {
-        this.key = name
         this.name = name
     }
 
-    override fun hashCode() = key.hashCode()
+    override fun runtimeId() = name
+
+    override fun hashCode() = runtimeId().hashCode()
 
     override fun equals(other: Any?): Boolean {
         if (other is TypeElement) {
-            return other.key == this.key
+            return other.runtimeId() == this.runtimeId()
         }
         return super.equals(other)
     }

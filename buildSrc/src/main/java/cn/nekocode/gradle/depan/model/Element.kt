@@ -26,5 +26,5 @@ interface Element {
 
     val elementType: Type
     var id: Int
-    var key: String
+    fun runtimeId(): String
 }
