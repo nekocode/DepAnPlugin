@@ -39,14 +39,11 @@ class DepanTransform(private val project: Project) : Transform() {
 
     override fun getName() = "depan"
 
-    override fun getInputTypes(): Set<QualifiedContent.ContentType>
-            = TransformManager.CONTENT_CLASS
+    override fun getInputTypes(): Set<QualifiedContent.ContentType> = TransformManager.CONTENT_CLASS
 
-    override fun getScopes(): MutableSet<in QualifiedContent.Scope>
-            = TransformManager.EMPTY_SCOPES
+    override fun getScopes(): MutableSet<in QualifiedContent.Scope> = TransformManager.EMPTY_SCOPES
 
-    override fun getReferencedScopes(): MutableSet<in QualifiedContent.Scope>
-            = TransformManager.SCOPE_FULL_PROJECT
+    override fun getReferencedScopes(): MutableSet<in QualifiedContent.Scope> = TransformManager.SCOPE_FULL_PROJECT
 
     override fun isIncremental() = false
 

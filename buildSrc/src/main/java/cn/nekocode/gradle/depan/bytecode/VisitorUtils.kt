@@ -22,7 +22,7 @@ import org.objectweb.asm.Type
  * @author nekocode (nekocode.cn@gmail.com)
  */
 fun getFullyQualifiedTypeName(type: Type): String {
-    return when(type.sort) {
+    return when (type.sort) {
         Type.VOID -> "void"
         Type.BOOLEAN -> "boolean"
         Type.CHAR -> "char"

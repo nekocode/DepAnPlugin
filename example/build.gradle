@@ -5,7 +5,8 @@ depan {
     outputDirFile = new File(project.buildDir, "depan")
     // enabled = true
     typeFilter { typeName ->
-        !typeName.endsWith(".R") &&
+        typeName.startsWith("cn.nekocode.depan.example") &&
+                !typeName.endsWith(".R") &&
                 !typeName.contains(".R\$") &&
                 !typeName.contains(".databinding.") &&
                 !typeName.endsWith(".BR")

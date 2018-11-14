@@ -19,8 +19,8 @@ package cn.nekocode.gradle.depan.model
 /**
  * @author nekocode (nekocode.cn@gmail.com)
  */
-interface Element {
-    val elementSort: ElementSort
-    var id: Int
-    fun runtimeId(): String
+enum class ElementSort(vararg descriptions: String) {
+    T("Type element"),
+    F("Field element"),
+    M("Method element"),
 }

@@ -23,12 +23,12 @@ import com.j256.ormlite.table.DatabaseTable
  * @author nekocode (nekocode.cn@gmail.com)
  */
 @DatabaseTable(tableName = "type")
-class TypeElement(): Element {
+class TypeElement() : Element {
     companion object {
         val SKIPPED_TYPE = TypeElement("SKIPPED_TYPE")
     }
 
-    override val elementType = Element.Type.TYPE
+    override val elementSort = ElementSort.T
 
     @DatabaseField(columnName = "id", generatedId = true)
     override var id: Int = -1
@@ -36,7 +36,7 @@ class TypeElement(): Element {
     @DatabaseField(columnName = "name", unique = true)
     lateinit var name: String
 
-    constructor(name: String): this() {
+    constructor(name: String) : this() {
         this.name = name
     }
 

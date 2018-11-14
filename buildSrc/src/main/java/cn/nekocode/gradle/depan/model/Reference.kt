@@ -28,14 +28,14 @@ class Reference() {
     @DatabaseField(columnName = "id", generatedId = true)
     var id: Int = -1
 
-    @DatabaseField(columnName = "from_type", dataType = DataType.ENUM_STRING)
-    lateinit var fromType: Element.Type
+    @DatabaseField(columnName = "from_sort", dataType = DataType.ENUM_STRING)
+    lateinit var fromSort: ElementSort
 
     @DatabaseField(columnName = "from_id")
     var fromId: Int = -1
 
-    @DatabaseField(columnName = "to_type", dataType = DataType.ENUM_STRING)
-    lateinit var toType: Element.Type
+    @DatabaseField(columnName = "to_sort", dataType = DataType.ENUM_STRING)
+    lateinit var toSort: ElementSort
 
     @DatabaseField(columnName = "to_id")
     var toId: Int = -1
@@ -43,21 +43,25 @@ class Reference() {
     @DatabaseField(columnName = "string_id", unique = true)
     lateinit var stringId: String
 
+    @DatabaseField(columnName = "relation", dataType = DataType.ENUM_STRING)
+    lateinit var relation: Relation
+
     private lateinit var fromElement: Element
     private lateinit var toElement: Element
 
-    constructor(fromElement: Element, toElement: Element): this() {
+    constructor(fromElement: Element, toElement: Element, relation: Relation) : this() {
         this.fromElement = fromElement
         this.toElement = toElement
+        this.relation = relation
         setStringId()
     }
 
     fun setStringId() {
-        this.fromType = fromElement.elementType
+        this.fromSort = fromElement.elementSort
         this.fromId = fromElement.id
-        this.toType = toElement.elementType
+        this.toSort = toElement.elementSort
         this.toId = toElement.id
-        this.stringId = "${fromType.ordinal}|$fromId|${toType.ordinal}|$toId"
+        this.stringId = "${fromSort.ordinal}|$fromId|${toSort.ordinal}|$toId"
     }
 
     fun key() = "${fromElement.runtimeId()}|${toElement.runtimeId()}"

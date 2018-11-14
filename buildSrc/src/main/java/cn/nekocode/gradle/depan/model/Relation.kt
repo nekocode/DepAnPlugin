@@ -19,8 +19,16 @@ package cn.nekocode.gradle.depan.model
 /**
  * @author nekocode (nekocode.cn@gmail.com)
  */
-interface Element {
-    val elementSort: ElementSort
-    var id: Int
-    fun runtimeId(): String
+enum class Relation(vararg descriptions: String) {
+    // Type to Type
+    E("Extends", "Implements"),
+
+    // Field/Method to Type
+    T("Type is", "Type references"),
+
+    // Method to Field/Method
+    C("Calls a method", "Uses a field"),
+
+    // Type/Field/Method to Type
+    A("Be annotated with"),
 }
