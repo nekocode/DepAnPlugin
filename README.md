@@ -1,23 +1,56 @@
-A gradle plugin to extract the dependency info (between classes, fields and methods) of your Android project. Save all the dependencies to a sqlite database file.
+This is a gradle plugin to extract the dependency info (between classes, fields and methods) of your Android project. Save all the dependencies to a sqlite database file.
 
-Database structure:
+## Database structure
 
-It has a `type` table for saving all type (class and interface) names, a `field` and a `method` table for saving all fields and methods inside classes, respectively. And lastly there is a `reference` table for saving references between all of them.
+There is a `type` table to save all type (class and interface) names:
 
-References between elements:
-
-| Action | Releation |
+| Column | Description |
 | :- | :- |
-| Type `A` inherits, implements or is annotated with `B` | 	`A(TYPE) REFERENCES B(TYPE)` |
-| Field `D`'s type is `B`, or be annotated with `B` | `D(FIELD) REFERENCES B(TYPE)` |
-| Method `E` is annotated with `B`| `E(METHOD) REFERENCES B(TYPE)` |
-| Method `E`'s parameter or return value's type is `B` | `E(METHOD) REFERENCES B(TYPE)` |
-| Method `E`'s parameter or return value is annotated with `B`| `E(METHOD) REFERENCES B(TYPE)` |
-| Method `E` uses type `A` in the code block | `E(METHOD) REFERENCES A(TYPE)` |
-| Method `E` uses field `D` in the code block | `E(METHOD) REFERENCES D(FIELD)` |
-| Method `E` calls method `F` in the code block | `E(METHOD) REFERENCES F(METHOD)` |
+| id | ID of this type |
+| name | Name of this type |
 
-Usage:
+A `field` table to save all fields of all classes:
+
+| Column | Description |
+| :- | :- |
+| id | ID of this field |
+| name | Name of this field |
+| type | ID of this field's type |
+| owner | ID of this field's owner type |
+| string_id | Internal use only |
+
+A `method` table to save all methods of all classes:
+
+| Column | Description |
+| :- | :- |
+| id | ID of this method |
+| name | Name of this method |
+| desc | Description of this method, such as `(Ljava/lang/String)V` |
+| owner | ID of this method's owner type |
+| string_id | Internal use only |
+
+And lastly there is a `reference` table for saving references between all types, fields and methods:
+
+| Column | Description |
+| :- | :- |
+| id | ID of this method |
+| from_sort | Sort of this reference's source, can be `T`(Type), `F`(Field) or `M`(Method) |
+| from_id | ID of this reference's source |
+| to_sort | Sort of this reference's target, can be `T`(Type), `F`(Field) or `M`(Method) |
+| to_id | ID of this reference's target |
+| relation | Relation of this reference. See below for details. |
+| string_id | Internal use only |
+
+Take `A references B` for example, the relation of this reference can be:
+
+| Enum value | Description |
+| :- | :- |
+| E | Type to Type, means `A extends B` or `A implements B` |
+| T | Field/Method to Type, means `The type of A is B` or `A uses type B` |
+| C | Method to Field/Method, means `Method A access filed B` or `Method A calls method B` |
+| A | Type/Field/Method to Type, means `A is annotated with B` |
+
+## Usage
 
 The `${lastest-version}` of this plugin is [![](https://jitpack.io/v/nekocode/DepAnPlugin.svg)](https://jitpack.io/#nekocode/DepAnPlugin). Copy below code to the `build.gradle` of your android application project.
 

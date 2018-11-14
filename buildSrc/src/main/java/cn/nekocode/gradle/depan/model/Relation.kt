@@ -30,5 +30,5 @@ enum class Relation(vararg descriptions: String) {
     C("Calls a method", "Uses a field"),
 
     // Type/Field/Method to Type
-    A("Be annotated with"),
+    A("Is annotated with"),
 }

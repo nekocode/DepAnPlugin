@@ -40,11 +40,11 @@ class Reference() {
     @DatabaseField(columnName = "to_id")
     var toId: Int = -1
 
-    @DatabaseField(columnName = "string_id", unique = true)
-    lateinit var stringId: String
-
     @DatabaseField(columnName = "relation", dataType = DataType.ENUM_STRING)
     lateinit var relation: Relation
+
+    @DatabaseField(columnName = "string_id", unique = true)
+    lateinit var stringId: String
 
     private lateinit var fromElement: Element
     private lateinit var toElement: Element
