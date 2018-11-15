@@ -52,7 +52,7 @@ class FieldElement() : Element {
         this.stringId = "${elementSort.ordinal}|$name|${type.id}|${owner.id}"
     }
 
-    override fun runtimeId() = "$name|${type.runtimeId()}|${owner.runtimeId()}"
+    override fun runtimeId() = "${elementSort.ordinal}|$name|${type.runtimeId()}|${owner.runtimeId()}"
 
     override fun hashCode() = runtimeId().hashCode()
 

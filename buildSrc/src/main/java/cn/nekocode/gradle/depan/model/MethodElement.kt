@@ -53,7 +53,7 @@ class MethodElement() : Element {
         this.stringId = "${elementSort.ordinal}|$name|$desc|${owner.id}"
     }
 
-    override fun runtimeId() = "$name|$desc|${owner.runtimeId()}"
+    override fun runtimeId() = "${elementSort.ordinal}|$name|$desc|${owner.runtimeId()}"
 
     override fun hashCode() = runtimeId().hashCode()
 
