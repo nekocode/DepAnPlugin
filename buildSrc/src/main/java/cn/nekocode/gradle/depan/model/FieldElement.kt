@@ -45,11 +45,11 @@ class FieldElement() : Element {
         this.name = name
         this.type = type
         this.owner = ownerClass
-        setStringId()
+        updateStringId()
     }
 
-    fun setStringId() {
-        this.stringId = "$name|${type.id}|${owner.id}"
+    fun updateStringId() {
+        this.stringId = "${elementSort.ordinal}|$name|${type.id}|${owner.id}"
     }
 
     override fun runtimeId() = "$name|${type.runtimeId()}|${owner.runtimeId()}"

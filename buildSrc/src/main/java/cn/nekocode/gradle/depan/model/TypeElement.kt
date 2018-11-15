@@ -40,7 +40,7 @@ class TypeElement() : Element {
         this.name = name
     }
 
-    override fun runtimeId() = name
+    override fun runtimeId() = "${elementSort.ordinal}|$name"
 
     override fun hashCode() = runtimeId().hashCode()
 

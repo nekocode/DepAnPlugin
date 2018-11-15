@@ -46,11 +46,11 @@ class MethodElement() : Element {
         this.name = name
         this.desc = desc
         this.owner = ownerClass
-        setStringId()
+        updateStringId()
     }
 
-    fun setStringId() {
-        this.stringId = "$name|$desc|${owner.id}"
+    fun updateStringId() {
+        this.stringId = "${elementSort.ordinal}|$name|$desc|${owner.id}"
     }
 
     override fun runtimeId() = "$name|$desc|${owner.runtimeId()}"

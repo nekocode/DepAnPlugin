@@ -109,7 +109,7 @@ class GraphBuilder(
             nodes.values.forEach {
                 when (it) {
                     is FieldElement -> {
-                        it.setStringId()
+                        it.updateStringId()
                         val dao = dbHelper.fieldElementDao
                         val rlt = dao.queryBuilder().where()
                                 .eq("string_id", it.stringId)
@@ -121,7 +121,7 @@ class GraphBuilder(
                         }
                     }
                     is MethodElement -> {
-                        it.setStringId()
+                        it.updateStringId()
                         val dao = dbHelper.methodElementDao
                         val rlt = dao.queryBuilder().where()
                                 .eq("string_id", it.stringId)
@@ -136,7 +136,7 @@ class GraphBuilder(
             }
 
             edges.forEach {
-                it.setStringId()
+                it.updateStringId()
                 val dao = dbHelper.referenceDao
                 val rlt = dao.queryBuilder().where()
                         .eq("string_id", it.stringId)

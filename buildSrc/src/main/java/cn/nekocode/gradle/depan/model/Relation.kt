@@ -24,10 +24,10 @@ enum class Relation(vararg descriptions: String) {
     E("Extends", "Implements"),
 
     // Field/Method to Type
-    T("Type is", "Type references"),
+    T("Type is", "Uses type"),
 
     // Method to Field/Method
-    C("Calls a method", "Uses a field"),
+    C("Calls method", "Uses field"),
 
     // Type/Field/Method to Type
     A("Is annotated with"),

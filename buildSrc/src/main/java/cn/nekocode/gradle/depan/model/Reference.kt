@@ -53,24 +53,24 @@ class Reference() {
         this.fromElement = fromElement
         this.toElement = toElement
         this.relation = relation
-        setStringId()
+        updateStringId()
     }
 
-    fun setStringId() {
+    fun updateStringId() {
         this.fromSort = fromElement.elementSort
         this.fromId = fromElement.id
         this.toSort = toElement.elementSort
         this.toId = toElement.id
-        this.stringId = "${fromSort.ordinal}|$fromId|${toSort.ordinal}|$toId"
+        this.stringId = "${fromSort.ordinal}|$fromId|${toSort.ordinal}|$toId|${relation.ordinal}"
     }
 
-    fun key() = "${fromElement.runtimeId()}|${toElement.runtimeId()}"
+    fun runtimeId() = "${fromElement.runtimeId()}|${toElement.runtimeId()}|${relation.ordinal}"
 
-    override fun hashCode() = key().hashCode()
+    override fun hashCode() = runtimeId().hashCode()
 
     override fun equals(other: Any?): Boolean {
         if (other is Reference) {
-            return other.key() == this.key()
+            return other.runtimeId() == this.runtimeId()
         }
         return super.equals(other)
     }
