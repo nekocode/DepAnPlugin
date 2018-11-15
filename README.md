@@ -1,4 +1,6 @@
-This is a gradle plugin to extract the dependencies between classes, fields and methods in your Android project. And save to a sqlite database file.
+This is a gradle plugin to extract the dependencies between classes, fields and methods in your Android project. And save to a sqlite database file. 
+
+It's inspried by the Google's [depan](https://github.com/google/depan) project.
 
 ## Database structure
 
@@ -38,12 +40,12 @@ And lastly there is a `reference` table to save references between all types, fi
 | from_id | ID of this reference's source |
 | to_sort | Sort of this reference's target, can be `T`(Type), `F`(Field) or `M`(Method) |
 | to_id | ID of this reference's target |
-| relation | Relation of this reference. See below for details. |
+| relation | Relation of this reference. *See next paragraph for details.* |
 | string_id | Internal use only |
 
 Take `A references B` for example, the relation of this reference can be:
 
-| Enum value | Description |
+| Relation | Description |
 | :- | :- |
 | E | Type to Type, means `A extends B` or `A implements B` |
 | T | Field/Method to Type, means `The type of A is B` or `A uses type B` |
@@ -70,7 +72,8 @@ depan {
     outputDirFile = new File(project.buildDir, "depan")
 //  enabled = true
     typeFilter { typeName ->
-        !typeName.endsWith(".R") &&
+        typeName.startsWith("cn.nekocode.depan.example") &&
+                !typeName.endsWith(".R") &&
                 !typeName.contains(".R\$") &&
                 !typeName.contains(".databinding.") &&
                 !typeName.endsWith(".BR")
