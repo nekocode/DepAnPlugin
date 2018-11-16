@@ -1,0 +1,22 @@
+apply plugin: 'com.android.library'
+apply plugin: "depan"
+
+depan {
+    outputDirFile = new File(project.buildDir, "depan")
+    // enabled = true
+    typeFilter { typeName ->
+        typeName.startsWith("cn.nekocode.depan.example") &&
+                !typeName.endsWith(".R") &&
+                !typeName.contains(".R\$") &&
+                !typeName.contains(".databinding.") &&
+                !typeName.endsWith(".BR")
+    }
+}
+
+android {
+    compileSdkVersion 28
+    defaultConfig {
+        minSdkVersion 15
+        targetSdkVersion 28
+    }
+}

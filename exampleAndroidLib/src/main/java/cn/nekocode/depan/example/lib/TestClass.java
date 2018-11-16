@@ -14,21 +14,15 @@
  * limitations under the License.
  */
 
-package cn.nekocode.gradle.depan
-
-import java.io.File
+package cn.nekocode.depan.example.lib;
 
 /**
  * @author nekocode (nekocode.cn@gmail.com)
  */
-open class DepanConfig {
-    internal var typeFilter: (String) -> Boolean = {
-        !it.startsWith("java.lang.Object")
-    }
-    var outputDirFile: File = File("depanOutput")
-    var enabled: Boolean = true
+public class TestClass {
+    private String a = "";
 
-    fun typeFilter(it: (typeName: String) -> Boolean) {
-        typeFilter = it
+    public void test() {
+
     }
 }
