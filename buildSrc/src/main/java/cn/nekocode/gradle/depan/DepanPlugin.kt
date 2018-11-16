@@ -35,26 +35,29 @@ class DepanPlugin : Plugin<Project> {
     }
 
     override fun apply(project: Project) {
-        // Add 3rd-party jars to dependencies
-        val configName = "depanClasspath"
-        val config = project.configurations.maybeCreate(configName)
-        project.dependencies.run {
-            add(configName, create("org.xerial:sqlite-jdbc:3.25.2"))
-            add(configName, create("com.j256.ormlite:ormlite-core:5.1"))
-            add(configName, create("com.j256.ormlite:ormlite-jdbc:5.1"))
-        }
+        project.buildscript.run {
+            // Define repository
+            repositories.mavenCentral()
 
-        // Resolve depended jars and import them
-        val classloader = Thread.currentThread().contextClassLoader as URLClassLoader
-        config.forEach { file ->
-            URLClassLoader::class.java
-                    .getDeclaredMethod("addURL", URL::class.java)
-                    .run {
-                        isAccessible = true
-                        invoke(classloader, file.toURI().toURL())
-                    }
+            // Add 3rd-party jars to dependencies
+            val config = configurations.maybeCreate("depanClasspath")
+            config.defaultDependencies {
+                it.add(dependencies.create("org.xerial:sqlite-jdbc:3.25.2"))
+                it.add(dependencies.create("com.j256.ormlite:ormlite-core:5.1"))
+                it.add(dependencies.create("com.j256.ormlite:ormlite-jdbc:5.1"))
+            }
+
+            // Resolve depended jars and import them
+            val classloader = Thread.currentThread().contextClassLoader as URLClassLoader
+            config.forEach { file ->
+                URLClassLoader::class.java
+                        .getDeclaredMethod("addURL", URL::class.java)
+                        .run {
+                            isAccessible = true
+                            invoke(classloader, file.toURI().toURL())
+                        }
+            }
         }
-        project.configurations.remove(config)
 
         // Add depan config to ext
         project.extensions.create("depan", DepanConfig::class.java)
