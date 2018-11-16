@@ -16,7 +16,6 @@
 
 package cn.nekocode.gradle.depan
 
-import com.android.build.gradle.AppExtension
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.internal.pipeline.TransformTask
 import org.gradle.api.Plugin
@@ -36,6 +35,9 @@ class DepanPlugin : Plugin<Project> {
     }
 
     override fun apply(project: Project) {
+        val androidExtension = project.extensions.getByName("android") as BaseExtension?
+        androidExtension ?: return
+
         project.buildscript.run {
             // Define repository
             repositories.mavenCentral()
@@ -63,11 +65,8 @@ class DepanPlugin : Plugin<Project> {
         // Add depan config to ext
         project.extensions.create("depan", DepanConfig::class.java)
 
-        // Add transform
-        val androidExtension = project.extensions.getByName("android") as BaseExtension?
-        if (androidExtension != null && androidExtension is AppExtension) {
-            androidExtension.registerTransform(DepanTransform(project))
-        }
+        // Register transform
+        androidExtension.registerTransform(DepanTransform(project))
 
         project.afterEvaluate { _ ->
             project.tasks.forEach { t ->
@@ -77,7 +76,7 @@ class DepanPlugin : Plugin<Project> {
                     val buildType = task.name.substring(TASK_PREFIX.length)
 
                     // Always run the task
-                    task.outputs.upToDateWhen { _ -> false }
+                    // task.outputs.upToDateWhen { _ -> false }
 
                     // Pass vars to the task
                     val depanConfig = project.extensions.getByType(DepanConfig::class.java)
