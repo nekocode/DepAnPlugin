@@ -22,11 +22,11 @@ import java.io.File
  * @author nekocode (nekocode.cn@gmail.com)
  */
 open class DepanConfig {
-    var outputDirFile: File = File("depanOutput")
-    var enabled: Boolean = true
-    var typeFilter: (String) -> Boolean = {
+    internal var typeFilter: (String) -> Boolean = {
         !it.startsWith("java.lang.Object")
     }
+    var outputDirFile: File = File("depanOutput")
+    var enabled: Boolean = true
 
     fun typeFilter(it: (typeName: String) -> Boolean) {
         typeFilter = it

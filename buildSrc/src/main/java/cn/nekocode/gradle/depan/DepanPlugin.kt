@@ -26,6 +26,7 @@ import java.net.URL
 import java.net.URLClassLoader
 
 /**
+ * Debug: ./gradlew assD -Dorg.gradle.daemon=false -Dorg.gradle.debug=true
  * @author nekocode (nekocode.cn@gmail.com)
  */
 class DepanPlugin : Plugin<Project> {

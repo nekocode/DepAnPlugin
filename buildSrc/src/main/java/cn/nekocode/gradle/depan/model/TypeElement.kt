@@ -25,7 +25,7 @@ import com.j256.ormlite.table.DatabaseTable
 @DatabaseTable(tableName = "type")
 class TypeElement() : Element {
     companion object {
-        val SKIPPED_TYPE = TypeElement("SKIPPED_TYPE")
+        val SKIPPED_TYPE = TypeElement("\\SKIPPED_TYPE")
     }
 
     override val elementSort = ElementSort.T
