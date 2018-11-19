@@ -28,19 +28,19 @@ class Reference() {
     @DatabaseField(columnName = "id", generatedId = true)
     var id: Int = -1
 
-    @DatabaseField(columnName = "from_sort", dataType = DataType.ENUM_STRING)
+    @DatabaseField(columnName = "from_sort", dataType = DataType.ENUM_INTEGER)
     lateinit var fromSort: ElementSort
 
     @DatabaseField(columnName = "from_id")
     var fromId: Int = -1
 
-    @DatabaseField(columnName = "to_sort", dataType = DataType.ENUM_STRING)
+    @DatabaseField(columnName = "to_sort", dataType = DataType.ENUM_INTEGER)
     lateinit var toSort: ElementSort
 
     @DatabaseField(columnName = "to_id")
     var toId: Int = -1
 
-    @DatabaseField(columnName = "relation", dataType = DataType.ENUM_STRING)
+    @DatabaseField(columnName = "relation", dataType = DataType.ENUM_INTEGER)
     lateinit var relation: Relation
 
     @DatabaseField(columnName = "string_id", unique = true)

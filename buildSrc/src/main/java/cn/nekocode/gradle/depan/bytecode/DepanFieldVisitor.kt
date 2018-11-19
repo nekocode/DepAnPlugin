@@ -33,13 +33,13 @@ class DepanFieldVisitor(
         private val field: FieldElement) : FieldVisitor(Opcodes.ASM5) {
 
     override fun visitAnnotation(desc: String, visible: Boolean): AnnotationVisitor? {
-        graphBuilder.newEdge(field, TypeElement(desc.asmTypeName()), Relation.A)
+        graphBuilder.newEdge(field, TypeElement(desc.asmTypeName()), Relation.ANNOTATED)
         return null
     }
 
     override fun visitTypeAnnotation(
             typeRef: Int, typePath: TypePath?, desc: String, visible: Boolean): AnnotationVisitor? {
-        graphBuilder.newEdge(field, TypeElement(desc.asmTypeName()), Relation.A)
+        graphBuilder.newEdge(field, TypeElement(desc.asmTypeName()), Relation.ANNOTATED)
         return null
     }
 }

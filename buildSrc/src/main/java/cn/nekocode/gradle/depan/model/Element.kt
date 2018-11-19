@@ -22,5 +22,10 @@ package cn.nekocode.gradle.depan.model
 interface Element {
     val elementSort: ElementSort
     var id: Int
+    var accessFlags: Int
     fun runtimeId(): String
+
+    companion object {
+        const val ACCESS_FLAGS_MISSING = 0x800000
+    }
 }

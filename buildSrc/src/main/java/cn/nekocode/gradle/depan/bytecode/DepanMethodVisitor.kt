@@ -31,13 +31,13 @@ class DepanMethodVisitor(
         private val method: MethodElement) : MethodVisitor(Opcodes.ASM5) {
 
     override fun visitAnnotation(desc: String, visible: Boolean): AnnotationVisitor? {
-        graphBuilder.newEdge(method, TypeElement(desc.asmTypeName()), Relation.A)
+        graphBuilder.newEdge(method, TypeElement(desc.asmTypeName()), Relation.ANNOTATED)
         return null
     }
 
     override fun visitTypeAnnotation(
             typeRef: Int, typePath: TypePath?, desc: String, visible: Boolean): AnnotationVisitor? {
-        graphBuilder.newEdge(method, TypeElement(desc.asmTypeName()), Relation.A)
+        graphBuilder.newEdge(method, TypeElement(desc.asmTypeName()), Relation.ANNOTATED)
         return null
     }
 
@@ -46,13 +46,13 @@ class DepanMethodVisitor(
                 name,
                 TypeElement(desc.asmTypeName()),
                 TypeElement(owner.asmObjectTypeName()))
-        graphBuilder.newEdge(method, field, Relation.C)
+        graphBuilder.newEdge(method, field, Relation.CALLS)
     }
 
     override fun visitLocalVariable(
             name: String?, desc: String, signature: String?,
             start: Label?, end: Label?, index: Int) {
-        graphBuilder.newEdge(method, TypeElement(desc.asmTypeName()), Relation.T)
+        graphBuilder.newEdge(method, TypeElement(desc.asmTypeName()), Relation.TYPE)
     }
 
     override fun visitMethodInsn(
@@ -60,42 +60,42 @@ class DepanMethodVisitor(
 
         val otherMethod = MethodElement(
                 name, desc, TypeElement(owner.asmObjectTypeName()))
-        graphBuilder.newEdge(method, otherMethod, Relation.C)
+        graphBuilder.newEdge(method, otherMethod, Relation.CALLS)
 
         desc.asmArgumentTypes().forEach {
-            graphBuilder.newEdge(otherMethod, TypeElement(it), Relation.T)
+            graphBuilder.newEdge(otherMethod, TypeElement(it), Relation.TYPE)
         }
 
         graphBuilder.newEdge(otherMethod,
-                TypeElement(desc.asmReturnTypeName()), Relation.T)
+                TypeElement(desc.asmReturnTypeName()), Relation.TYPE)
     }
 
     override fun visitMultiANewArrayInsn(desc: String, dims: Int) {
-        graphBuilder.newEdge(method, TypeElement(desc.asmTypeName()), Relation.T)
+        graphBuilder.newEdge(method, TypeElement(desc.asmTypeName()), Relation.TYPE)
     }
 
     override fun visitParameterAnnotation(
             parameter: Int, desc: String, visible: Boolean): AnnotationVisitor? {
-        graphBuilder.newEdge(method, TypeElement(desc.asmTypeName()), Relation.A)
+        graphBuilder.newEdge(method, TypeElement(desc.asmTypeName()), Relation.ANNOTATED)
         return null
     }
 
     override fun visitTryCatchBlock(start: Label?, end: Label?, handler: Label?, type: String?) {
         if (type != null) {
             graphBuilder.newEdge(method,
-                    TypeElement(type.asmObjectTypeName()), Relation.T)
+                    TypeElement(type.asmObjectTypeName()), Relation.TYPE)
         }
     }
 
     override fun visitTypeInsn(opcode: Int, type: String) {
         graphBuilder.newEdge(method,
-                TypeElement(type.asmObjectTypeName()), Relation.T)
+                TypeElement(type.asmObjectTypeName()), Relation.TYPE)
     }
 
     override fun visitLdcInsn(cst: Any?) {
         if (cst is Type) {
             graphBuilder.newEdge(method,
-                    TypeElement(getFullyQualifiedTypeName(cst)), Relation.T)
+                    TypeElement(getFullyQualifiedTypeName(cst)), Relation.TYPE)
         }
     }
 }

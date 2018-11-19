@@ -24,7 +24,7 @@ import com.j256.ormlite.table.DatabaseTable
  */
 @DatabaseTable(tableName = "method")
 class MethodElement() : Element {
-    override val elementSort = ElementSort.M
+    override val elementSort = ElementSort.METHOD
 
     @DatabaseField(columnName = "id", generatedId = true)
     override var id: Int = -1
@@ -38,14 +38,17 @@ class MethodElement() : Element {
     @DatabaseField(columnName = "owner", foreign = true)
     lateinit var owner: TypeElement
 
+    @DatabaseField(columnName = "access_flags")
+    override var accessFlags: Int = Element.ACCESS_FLAGS_MISSING
+
     @DatabaseField(columnName = "string_id", unique = true)
     lateinit var stringId: String
 
-    constructor(name: String, desc: String, ownerClass: TypeElement) : this() {
-        this.stringId = "$name|$desc|${ownerClass.id}"
+    constructor(name: String, desc: String, ownerClass: TypeElement, accessFlags: Int = Element.ACCESS_FLAGS_MISSING) : this() {
         this.name = name
         this.desc = desc
         this.owner = ownerClass
+        this.accessFlags = accessFlags
         updateStringId()
     }
 

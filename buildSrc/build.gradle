@@ -4,6 +4,7 @@ buildscript {
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.10"
+        classpath "com.github.dcendents:android-maven-gradle-plugin:1.5"
     }
 }
 
@@ -12,10 +13,26 @@ repositories {
     jcenter()
 }
 
-apply from: project.file("common.gradle")
+apply plugin: "kotlin"
+apply plugin: "com.github.dcendents.android-maven"
 
 dependencies {
-    deps.each {
-        implementation it
-    }
+    implementation gradleApi()
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.10"
+    implementation "com.android.tools.build:gradle:3.2.1"
+    implementation "org.xerial:sqlite-jdbc:3.25.2"
+    implementation "com.j256.ormlite:ormlite-core:5.1"
+    implementation "com.j256.ormlite:ormlite-jdbc:5.1"
 }
+
+// build a jar with source files
+task sourcesJar(type: Jar) {
+    from sourceSets.main.java.srcDirs
+    classifier = "sources"
+}
+
+artifacts {
+    archives sourcesJar
+}
+
+group="com.github.nekocode"

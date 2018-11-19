@@ -21,14 +21,14 @@ package cn.nekocode.gradle.depan.model
  */
 enum class Relation(vararg descriptions: String) {
     // Type to Type
-    E("Extends", "Implements"),
+    EXTENDS("Extends", "Implements"),
 
     // Field/Method to Type
-    T("Type is", "Uses type"),
+    TYPE("Type is", "Uses type"),
 
     // Method to Field/Method
-    C("Calls method", "Uses field"),
+    CALLS("Calls method", "Uses field"),
 
     // Type/Field/Method to Type
-    A("Is annotated with"),
+    ANNOTATED("Is annotated with"),
 }

@@ -33,32 +33,32 @@ class DepanClassVisitor(private val graphBuilder: GraphBuilder) : ClassVisitor(O
     override fun visit(
             version: Int, access: Int, name: String, signature: String?,
             superName: String?, interfaces: Array<out String>) {
-        mainType = TypeElement(name.asmObjectTypeName())
+        mainType = TypeElement(name.asmObjectTypeName(), access)
         isSkipped = (graphBuilder.newNode(mainType) == TypeElement.SKIPPED_TYPE)
         if (isSkipped) return
 
         superName?.asmObjectTypeName()?.let {
             val superClassType = TypeElement(it)
-            graphBuilder.newEdge(mainType, superClassType, Relation.E)
+            graphBuilder.newEdge(mainType, superClassType, Relation.EXTENDS)
         }
 
         for (i in interfaces) {
             val interfaceType = TypeElement(i.asmObjectTypeName())
-            graphBuilder.newEdge(mainType, interfaceType, Relation.E)
+            graphBuilder.newEdge(mainType, interfaceType, Relation.EXTENDS)
         }
     }
 
     override fun visitAnnotation(
             desc: String, visible: Boolean): AnnotationVisitor? {
         if (isSkipped) return null
-        graphBuilder.newEdge(mainType, TypeElement(desc.asmTypeName()), Relation.A)
+        graphBuilder.newEdge(mainType, TypeElement(desc.asmTypeName()), Relation.ANNOTATED)
         return null
     }
 
     override fun visitTypeAnnotation(
             typeRef: Int, typePath: TypePath?, desc: String, visible: Boolean): AnnotationVisitor? {
         if (isSkipped) return null
-        graphBuilder.newEdge(mainType, TypeElement(desc.asmTypeName()), Relation.A)
+        graphBuilder.newEdge(mainType, TypeElement(desc.asmTypeName()), Relation.ANNOTATED)
         return null
     }
 
@@ -67,9 +67,9 @@ class DepanClassVisitor(private val graphBuilder: GraphBuilder) : ClassVisitor(O
             signature: String?, value: Any?): FieldVisitor? {
         if (isSkipped) return null
         val fieldType = TypeElement(desc.asmTypeName())
-        val field = FieldElement(name, fieldType, mainType)
+        val field = FieldElement(name, fieldType, mainType, access)
         graphBuilder.newNode(field)
-        graphBuilder.newEdge(field, fieldType, Relation.T)
+        graphBuilder.newEdge(field, fieldType, Relation.TYPE)
         return DepanFieldVisitor(graphBuilder, field)
     }
 
@@ -77,20 +77,20 @@ class DepanClassVisitor(private val graphBuilder: GraphBuilder) : ClassVisitor(O
             access: Int, name: String, desc: String,
             signature: String?, exceptions: Array<out String>?): MethodVisitor? {
         if (isSkipped) return null
-        val method = MethodElement(name, desc, mainType)
+        val method = MethodElement(name, desc, mainType, access)
         graphBuilder.newNode(method)
 
         desc.asmArgumentTypes().forEach {
-            graphBuilder.newEdge(method, TypeElement(it), Relation.T)
+            graphBuilder.newEdge(method, TypeElement(it), Relation.TYPE)
         }
 
         graphBuilder.newEdge(method,
-                TypeElement(desc.asmReturnTypeName()), Relation.T)
+                TypeElement(desc.asmReturnTypeName()), Relation.TYPE)
 
         if (exceptions != null) {
             for (exception in exceptions) {
                 graphBuilder.newEdge(method,
-                        TypeElement(exception.asmObjectTypeName()), Relation.T)
+                        TypeElement(exception.asmObjectTypeName()), Relation.TYPE)
             }
         }
 

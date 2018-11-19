@@ -21,11 +21,9 @@ import com.android.build.gradle.internal.pipeline.TransformTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import java.io.File
-import java.net.URL
-import java.net.URLClassLoader
 
 /**
- * Debug: ./gradlew assD -Dorg.gradle.daemon=false -Dorg.gradle.debug=true
+ * Debug: ./gradlew assDebug -Dorg.gradle.daemon=false -Dorg.gradle.debug=true
  * @author nekocode (nekocode.cn@gmail.com)
  */
 class DepanPlugin : Plugin<Project> {
@@ -37,30 +35,6 @@ class DepanPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         val androidExtension = project.extensions.getByName("android") as BaseExtension?
         androidExtension ?: return
-
-        project.buildscript.run {
-            // Define repository
-            repositories.mavenCentral()
-
-            // Add 3rd-party jars to dependencies
-            val config = configurations.maybeCreate("depanClasspath")
-            config.defaultDependencies {
-                it.add(dependencies.create("org.xerial:sqlite-jdbc:3.25.2"))
-                it.add(dependencies.create("com.j256.ormlite:ormlite-core:5.1"))
-                it.add(dependencies.create("com.j256.ormlite:ormlite-jdbc:5.1"))
-            }
-
-            // Resolve depended jars and import them
-            val classloader = Thread.currentThread().contextClassLoader as URLClassLoader
-            config.forEach { file ->
-                URLClassLoader::class.java
-                        .getDeclaredMethod("addURL", URL::class.java)
-                        .run {
-                            isAccessible = true
-                            invoke(classloader, file.toURI().toURL())
-                        }
-            }
-        }
 
         // Add depan config to ext
         project.extensions.create("depan", DepanConfig::class.java)
@@ -80,10 +54,19 @@ class DepanPlugin : Plugin<Project> {
 
                     // Pass vars to the task
                     val depanConfig = project.extensions.getByType(DepanConfig::class.java)
-                    val dbHelper = DbHelper(File(depanConfig.outputDirFile, "$buildType.db"))
+                    val dbFile = File(depanConfig.outputDirFile, "$buildType.db")
+
+                    val dbHelper = DbHelper(dbFile)
                     val graphBuilder = GraphBuilder(dbHelper, depanConfig)
                     task.extensions.add("graphBuilder", graphBuilder)
                     task.extensions.add("depanConfig", depanConfig)
+
+                    // Remove old database file
+                    task.doFirst {
+                        if (dbFile.exists()) {
+                            dbFile.delete()
+                        }
+                    }
 
                     // After the task is finished, save dependency data to database
                     task.doLast { _ ->
