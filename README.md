@@ -1,4 +1,4 @@
-This is a gradle plugin to extract the dependencies between classes, fields and methods in your Android project. And save to a sqlite database file. 
+This is a gradle plugin to extract the bytecode informatioin of classes & fields & methods, and dependencies between them in your Android project. And save to a sqlite database file. 
 
 It's inspried by the Google's [depan](https://github.com/google/depan) project.
 
@@ -10,6 +10,7 @@ There is a `type` table to save all type (class and interface) names:
 | :- | :- |
 | id | ID of this type |
 | name | Name of this type |
+| access_flags | The access flags of this element, see the [`Opcodes.java`](https://gitlab.ow2.org/asm/asm/blob/ASM_6_0/src/org/objectweb/asm/Opcodes.java#L64-88) in project ASM for more details |
 
 A `field` table to save all fields of all classes:
 
@@ -19,6 +20,7 @@ A `field` table to save all fields of all classes:
 | name | Name of this field |
 | type | ID of this field's type |
 | owner | ID of this field's owner type |
+| access_flags | The access flags of this element |
 | string_id | Internal use only |
 
 A `method` table to save all methods of all classes:
@@ -29,6 +31,7 @@ A `method` table to save all methods of all classes:
 | name | Name of this method |
 | desc | Description of this method, such as `(Ljava/lang/String)V` |
 | owner | ID of this method's owner type |
+| access_flags | The access flags of this element |
 | string_id | Internal use only |
 
 And lastly there is a `reference` table to save references between all types, fields and methods:
@@ -36,9 +39,9 @@ And lastly there is a `reference` table to save references between all types, fi
 | Column | Description |
 | :- | :- |
 | id | ID of this method |
-| from_sort | Sort of this reference's source, can be `T`(Type), `F`(Field) or `M`(Method) |
+| from_sort | Sort of this reference's source, can be `0`(Type), `1`(Field) or `2`(Method) |
 | from_id | ID of this reference's source |
-| to_sort | Sort of this reference's target, can be `T`(Type), `F`(Field) or `M`(Method) |
+| to_sort | Sort of this reference's target |
 | to_id | ID of this reference's target |
 | relation | Relation of this reference. *See next paragraph for details.* |
 | string_id | Internal use only |
@@ -47,10 +50,10 @@ Take `A references B` for example, the relation of this reference can be:
 
 | Relation | Description |
 | :- | :- |
-| E | Type to Type, means `A extends B` or `A implements B` |
-| T | Field/Method to Type, means `The type of A is B` or `A uses type B` |
-| C | Method to Field/Method, means `Method A access filed B` or `Method A calls method B` |
-| A | Type/Field/Method to Type, means `A is annotated with B` |
+| 0 | Type to Type, means `A extends B` or `A implements B` |
+| 1 | Field/Method to Type, means `The type of A is B` or `A uses type B` |
+| 2 | Method to Field/Method, means `Method A access filed B` or `Method A calls method B` |
+| 3 | Type/Field/Method to Type, means `A is annotated with B` |
 
 ## Usage
 
