@@ -24,6 +24,11 @@ import cn.nekocode.gradle.depan.model.*
 class GraphBuilder(
         private val dbHelper: DbHelper,
         private val depanConfig: DepanConfig) {
+
+    companion object {
+        const val SAVE_THRESHOLD = 10000
+    }
+
     private val typeNodes = HashMap<String, TypeElement>()
     private val nodes = HashMap<String, Element>()
     private val edges = HashSet<Reference>()
@@ -33,7 +38,7 @@ class GraphBuilder(
         val rlt: Element = when (element) {
             is TypeElement -> {
                 if (depanConfig.typeFilter.invoke(element.name)) {
-                    typeNodes.getOrPut(element.runtimeId()) { element }
+                    typeNodes.getOrPut(element.runtimeId(), element)
                 } else {
                     return TypeElement.SKIPPED_TYPE
                 }
@@ -55,7 +60,7 @@ class GraphBuilder(
                     element.type = e ?: TypeElement.SKIPPED_TYPE
                 }
 
-                nodes.getOrPut(element.runtimeId()) { element }
+                nodes.getOrPut(element.runtimeId(), element)
             }
             is MethodElement -> {
                 var e = typeNodes[element.owner.runtimeId()]
@@ -66,14 +71,14 @@ class GraphBuilder(
                     element.owner = e ?: TypeElement.SKIPPED_TYPE
                 }
 
-                nodes.getOrPut(element.runtimeId()) { element }
+                nodes.getOrPut(element.runtimeId(), element)
             }
             else -> {
                 throw Exception()
             }
         }
 
-        if (nodes.size > 5000) {
+        if (nodes.size > SAVE_THRESHOLD) {
             // If there are too many data, save them to db
             saveToDb()
         }
@@ -85,7 +90,7 @@ class GraphBuilder(
         val reference = Reference(newNode(fromElement), newNode(toElement), relation)
         edges.add(reference)
 
-        if (edges.size > 5000) {
+        if (edges.size > SAVE_THRESHOLD) {
             // If there are too many edges, auto save to db
             saveToDb()
         }
@@ -96,11 +101,19 @@ class GraphBuilder(
         dbHelper.callInTransaction {
             typeNodes.values.forEach {
                 val dao = dbHelper.typeElementDao
-                val rlt = dao.queryBuilder().where()
+                val old = dao.queryBuilder().where()
                         .eq("name", it.name)
                         .queryForFirst()
-                if (rlt != null) {
-                    it.id = rlt.id
+                if (old != null) {
+                    it.id = old.id
+                    if ((it.accessFlags != Element.ACCESS_FLAGS_MISSING) and
+                            (old.accessFlags == Element.ACCESS_FLAGS_MISSING)) {
+                        dao.updateBuilder().run {
+                            updateColumnValue("access_flags", it.accessFlags)
+                            where().eq("id", old.id)
+                            update()
+                        }
+                    }
                 } else {
                     dao.create(it)
                 }
@@ -111,11 +124,19 @@ class GraphBuilder(
                     is FieldElement -> {
                         it.updateStringId()
                         val dao = dbHelper.fieldElementDao
-                        val rlt = dao.queryBuilder().where()
+                        val old = dao.queryBuilder().where()
                                 .eq("string_id", it.stringId)
                                 .queryForFirst()
-                        if (rlt != null) {
-                            it.id = rlt.id
+                        if (old != null) {
+                            it.id = old.id
+                            if ((it.accessFlags != Element.ACCESS_FLAGS_MISSING) and
+                                    (old.accessFlags == Element.ACCESS_FLAGS_MISSING)) {
+                                dao.updateBuilder().run {
+                                    updateColumnValue("access_flags", it.accessFlags)
+                                    where().eq("id", old.id)
+                                    update()
+                                }
+                            }
                         } else {
                             dao.create(it)
                         }
@@ -123,11 +144,19 @@ class GraphBuilder(
                     is MethodElement -> {
                         it.updateStringId()
                         val dao = dbHelper.methodElementDao
-                        val rlt = dao.queryBuilder().where()
+                        val old = dao.queryBuilder().where()
                                 .eq("string_id", it.stringId)
                                 .queryForFirst()
-                        if (rlt != null) {
-                            it.id = rlt.id
+                        if (old != null) {
+                            it.id = old.id
+                            if ((it.accessFlags != Element.ACCESS_FLAGS_MISSING) and
+                                    (old.accessFlags == Element.ACCESS_FLAGS_MISSING)) {
+                                dao.updateBuilder().run {
+                                    updateColumnValue("access_flags", it.accessFlags)
+                                    where().eq("id", old.id)
+                                    update()
+                                }
+                            }
                         } else {
                             dao.create(it)
                         }
@@ -138,10 +167,10 @@ class GraphBuilder(
             edges.forEach {
                 it.updateStringId()
                 val dao = dbHelper.referenceDao
-                val rlt = dao.queryBuilder().where()
+                val old = dao.queryBuilder().where()
                         .eq("string_id", it.stringId)
                         .queryForFirst()
-                if (rlt == null) {
+                if (old == null) {
                     dao.create(it)
                 }
             }
@@ -151,5 +180,19 @@ class GraphBuilder(
         // Clear memory cache
         nodes.clear()
         edges.clear()
+    }
+
+    private fun <T: Element> HashMap<String, T>.getOrPut(id: String, defaultElement: T): T {
+        val oldElement = this[id]
+        if (oldElement == null) {
+            this[id] = defaultElement
+            return defaultElement
+        }
+
+        if (oldElement.accessFlags == Element.ACCESS_FLAGS_MISSING) {
+            oldElement.accessFlags = defaultElement.accessFlags
+        }
+
+        return oldElement
     }
 }

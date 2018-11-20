@@ -28,7 +28,7 @@ class TypeElement() : Element {
         val SKIPPED_TYPE = TypeElement("\\SKIPPED_TYPE")
     }
 
-    override val elementSort = ElementSort.T
+    override val elementSort = ElementSort.TYPE
 
     @DatabaseField(columnName = "id", generatedId = true)
     override var id: Int = -1
@@ -36,8 +36,12 @@ class TypeElement() : Element {
     @DatabaseField(columnName = "name", unique = true)
     lateinit var name: String
 
-    constructor(name: String) : this() {
+    @DatabaseField(columnName = "access_flags")
+    override var accessFlags: Int = Element.ACCESS_FLAGS_MISSING
+
+    constructor(name: String, accessFlags: Int = Element.ACCESS_FLAGS_MISSING) : this() {
         this.name = name
+        this.accessFlags = accessFlags
     }
 
     override fun runtimeId() = "${elementSort.ordinal}|$name"
