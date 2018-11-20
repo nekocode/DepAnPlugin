@@ -73,6 +73,7 @@ class DepanPlugin : Plugin<Project> {
                         if (depanConfig.enabled) {
                             graphBuilder.saveToDb()
                             dbHelper.close()
+                            project.logger.quiet("Depan has generated a database file to: ${dbFile.absolutePath}")
                         }
                     }
                 }
