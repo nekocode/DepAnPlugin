@@ -10,7 +10,7 @@ There is a `type` table to save all type (class and interface) names:
 | :- | :- |
 | id | ID of this type |
 | name | Name of this type |
-| access_flags | The access flags of this element, see the [`Opcodes.java`](https://gitlab.ow2.org/asm/asm/blob/ASM_6_0/src/org/objectweb/asm/Opcodes.java#L64-88) in project ASM for more details |
+| access_flags | The access flags of this element, see the [`Opcodes.java`](https://gitlab.ow2.org/asm/asm/blob/ASM_6_0/src/org/objectweb/asm/Opcodes.java#L64-88) in project ASM for more details.<br/>Note that `0x800000` means this element was skipped in the analysis, or is missing in the apk/aar. |
 
 A `field` table to save all fields of all classes:
 
