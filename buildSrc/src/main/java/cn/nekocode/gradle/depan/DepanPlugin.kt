@@ -54,7 +54,11 @@ class DepanPlugin : Plugin<Project> {
 
                     // Pass vars to the task
                     val depanConfig = project.extensions.getByType(DepanConfig::class.java)
-                    val dbFile = File(depanConfig.outputDirFile, "$buildType.db")
+                    var dbFile = File(depanConfig.outputDirFile, "$buildType.db")
+                    if (!dbFile.isAbsolute) {
+                        // Get a absolute file
+                        dbFile = project.file(dbFile)
+                    }
 
                     val dbHelper = DbHelper(dbFile)
                     val graphBuilder = GraphBuilder(dbHelper, depanConfig)
